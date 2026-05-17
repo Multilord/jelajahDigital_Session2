@@ -7,6 +7,7 @@ import GamePreview from './components/GamePreview.jsx';
 import Showcase from './components/Showcase.jsx';
 import { MODULE_FLOW, QUIZZES, LEARN_SLIDES, PROMPT_SLIDES } from './data.js';
 import { addSessionEvent, loadSession, recordPromptUse, resetSession } from './utils/sessionLog.js';
+import { syncSessionToFirestore, recordGameToGallery } from './lib/firebase.js';
 import { Brain, Wand2, Gamepad2, Megaphone } from 'lucide-react';
 
 const DEFAULT_GAME = {
@@ -79,6 +80,13 @@ export default function App() {
   const [session, setSession] = useState(() => loadSession());
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
+  // Sync session to Firestore whenever it changes
+  useEffect(() => {
+    if (session?.sessionId) {
+      syncSessionToFirestore(session);
+    }
+  }, [session]);
+
   useEffect(() => {
     const saved = loadSession();
     setSession(saved);
@@ -97,6 +105,8 @@ export default function App() {
   function handleGenerated({ mode, prompt, config }) {
     const updated = recordPromptUse(session, { mode, prompt, config });
     setSession(updated);
+    // Also push to the global gallery for the facilitator to see
+    recordGameToGallery(updated, config);
   }
 
   function handleReset() {
