@@ -1,0 +1,216 @@
+:root {
+  --bg-deep: #0f172a;
+  --bg-surface: rgba(30, 41, 59, 0.7);
+  --accent-cyan: #22d3ee;
+  --accent-purple: #a855f7;
+  --accent-yellow: #facc15;
+  --accent-pink: #f472b6;
+  --text-main: #f8fafc;
+  --text-sub: #94a3b8;
+  --gradient-main: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(34, 211, 238, 0.2) 0%, transparent 40%),
+    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+  background-size: 100% 100%, 100% 100%, 550px 550px, 350px 350px, 250px 250px;
+  background-position: 0 0, 0 0, 0 0, 40px 60px, 130px 270px;
+  color: var(--text-main);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  width: min(1000px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 20px 0 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+}
+
+.animate-in {
+  animation: fadeSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 15px 25px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #fff, var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Panels */
+.panel {
+  background: var(--bg-surface);
+  border-radius: 36px;
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255,255,255,0.02);
+  backdrop-filter: blur(16px);
+  transition: transform 0.3s ease;
+}
+
+.panel:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.lesson-panel h2 {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  background: linear-gradient(to bottom, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+.primary-button {
+  background: var(--gradient-main);
+  border: none;
+  color: white;
+  font-weight: 900;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 8px 0 #9333ea;
+}
+
+.primary-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 0 #9333ea, 0 15px 30px rgba(168, 85, 247, 0.4);
+}
+
+.primary-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #9333ea;
+}
+
+/* Stepper */
+.stepper-nav {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 15px;
+  border-radius: 99px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.step-item.active .step-circle {
+  animation: pulse 2s infinite;
+}
+
+/* Quiz */
+.option-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-cyan);
+  transform: scale(1.02);
+  box-shadow: 0 10px 20px rgba(34, 211, 238, 0.1);
+}
+
+.quiz-feedback {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  animation: fadeSlideUp 0.4s ease-out;
+}
+
+/* Showcase */
+.share-card.main {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+  border: 2px solid var(--accent-cyan);
+  box-shadow: 0 0 30px rgba(34, 211, 238, 0.1);
+}
+
+.share-card h3 {
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+}
+
+.sub-text {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.turn-counter {
+  font-size: 1.1rem;
+  padding: 12px 24px;
+}
+
+.game-instructions {
+  animation: pulse 3s infinite;
+}
+
+.game-container {
+  box-shadow: 0 0 50px rgba(0,0,0,0.5), 0 0 20px rgba(168, 85, 247, 0.1);
+}
+
+/* Custom Scrollbar for Textarea */
+textarea::-webkit-scrollbar {
+  width: 8px;
+}
+textarea::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+textarea::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Responsive fixes */
+@media (max-width: 600px) {
+  .logo h1 { font-size: 1.1rem; }
+  .panel { padding: 25px; }
+  .lesson-panel h2 { font-size: 2rem; }
+  .stepper-nav { gap: 5px; padding: 10px; }
+  .step-title { display: none; }
+}
