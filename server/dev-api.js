@@ -3,7 +3,7 @@ import cors from 'cors';
 import generateGameHandler from '../api/generate-game.js';
 
 const app = express();
-app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }));
+app.use(cors({ origin: /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/ }));
 app.use(express.json({ limit: '1mb' }));
 
 function adapt(handler) {

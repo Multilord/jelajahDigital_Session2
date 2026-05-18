@@ -1,14 +1,16 @@
-import { Trophy } from 'lucide-react';
-
+/**
+ * GamePreview — iframe-based preview of the AI-generated game.
+ * All text in Bahasa Melayu.
+ */
 export default function GamePreview({ config }) {
   if (!config || !config.html) {
     return (
       <section className="panel game-panel">
         <div className="section-title-row">
           <div>
-            <p className="mini-label">Playable preview</p>
-            <h2>No game yet</h2>
-            <p>Your game will appear here after you create it.</p>
+            <p className="mini-label">Pratonton Game</p>
+            <h2>Belum ada game</h2>
+            <p>Game kamu akan muncul di sini selepas kamu menciptanya.</p>
           </div>
         </div>
       </section>
@@ -19,15 +21,15 @@ export default function GamePreview({ config }) {
     <section className="panel game-panel animate-in">
       <div className="section-title-row">
         <div>
-          <p className="mini-label">Playable preview</p>
-          <h2>{config.title || 'My AI Game'}</h2>
-          <p>{config.description || 'A custom game made with AI.'}</p>
+          <p className="mini-label">Pratonton Game</p>
+          <h2>{config.title || "Game Mini ala Pac-Man"}</h2>
+          <p>{config.description || "Game dicipta menggunakan AI."}</p>
         </div>
       </div>
 
       <div className="game-container">
         <iframe
-          title="AI Generated Game"
+          title="Game Mini ala Pac-Man"
           srcDoc={config.html}
           sandbox="allow-scripts"
           className="game-iframe"
@@ -37,8 +39,7 @@ export default function GamePreview({ config }) {
 
       <div className="game-footer">
         <div className="game-instructions">
-          <Trophy size={18} />
-          <span>{config.instructions || 'Use arrow keys to play!'}</span>
+          🎮 <span>{config.instructions || "Gunakan kekunci anak panah untuk bermain!"}</span>
         </div>
       </div>
     </section>

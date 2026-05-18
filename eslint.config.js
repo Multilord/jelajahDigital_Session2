@@ -19,6 +19,10 @@ export default [
         KeyboardEvent: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        alert: 'readonly',
+        confirm: 'readonly',
         console: 'readonly',
         process: 'readonly'
       },

@@ -13,10 +13,11 @@ export default async function handler(req, res) {
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
-    const { prompt, mode, currentConfig, sessionId, sessionPromptCount } = body;
+    const { prompt, mode, currentConfig, sessionId, teamId, sessionPromptCount } = body;
 
-    if (!sessionId || String(sessionId).length < 6) {
-      sendJson(res, 400, { error: 'Missing student session. Please refresh the page.' });
+    const id = teamId || sessionId;
+    if (!id || String(id).length < 6) {
+      sendJson(res, 400, { error: 'Missing team/session. Please refresh the page.' });
       return;
     }
 

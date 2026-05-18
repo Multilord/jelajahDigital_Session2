@@ -21,20 +21,49 @@ export function sanitizeUserPrompt(prompt = '') {
 
 function extractJson(text) {
   if (!text) return null;
-  const cleaned = text.replace(/```json|```/gi, '').trim();
-  const first = cleaned.indexOf('{');
-  const last = cleaned.lastIndexOf('}');
-  if (first === -1 || last === -1 || last <= first) return null;
+
+  // 1. Try direct parse (works when responseMimeType is application/json)
   try {
-    return JSON.parse(cleaned.slice(first, last + 1));
+    const direct = JSON.parse(text);
+    if (direct && typeof direct === 'object') return direct;
   } catch {
-    return null;
+    // not directly parseable, try extraction
   }
+
+  // 2. Strip markdown fences and try again
+  const cleaned = text.replace(/```json|```/gi, '').trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch {
+    // continue to brace matching
+  }
+
+  // 3. Fallback: find outermost { } using a depth counter
+  const start = cleaned.indexOf('{');
+  if (start === -1) return null;
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  for (let i = start; i < cleaned.length; i++) {
+    const ch = cleaned[i];
+    if (escape) { escape = false; continue; }
+    if (ch === '\\' && inString) { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === '{') depth++;
+    if (ch === '}') {
+      depth--; if (depth === 0) {
+        try { return JSON.parse(cleaned.slice(start, i + 1)); } catch { return null; }
+      }
+    }
+  }
+  return null;
 }
 
 function buildSystemPrompt({ mode, userPrompt, currentConfig }) {
   const previousHtml = currentConfig?.html || 'No previous game.';
-  
+
   return `You are a child-friendly game developer creating a simple playable mini game for students aged 10–12 in an AI Prompting workshop.
 Return ONLY valid JSON. Do not include markdown. Do not include extra text.
 The game should be a maze or Pac-Man-style game. You must generate the full HTML, CSS, and JavaScript.
@@ -86,8 +115,7 @@ export async function generateGameConfig({ prompt, mode = 'create', currentConfi
     ],
     generationConfig: {
       temperature: 0.8,
-      maxOutputTokens: 2048,
-      responseMimeType: 'application/json'
+      maxOutputTokens: 65536
     }
   };
 
@@ -104,7 +132,8 @@ export async function generateGameConfig({ prompt, mode = 'create', currentConfi
 
       const text = await response.text();
       if (!response.ok) {
-        errors.push(`Key ${index + 1}: ${response.status}`);
+        console.error(`Gemini Key ${index + 1} failed: HTTP ${response.status} — ${text.slice(0, 300)}`);
+        errors.push(`Key ${index + 1}: ${response.status} ${text.slice(0, 200)}`);
         continue;
       }
 
@@ -113,6 +142,8 @@ export async function generateGameConfig({ prompt, mode = 'create', currentConfi
       const parsed = extractJson(outputText);
 
       if (!parsed || !parsed.html) {
+        console.error(`Key ${index + 1} raw output (first 500 chars):`, outputText.slice(0, 500));
+        console.error(`Key ${index + 1} parsed result:`, parsed ? Object.keys(parsed) : 'null');
         errors.push(`Key ${index + 1}: Gemini returned invalid JSON or missing HTML.`);
         continue;
       }
@@ -123,9 +154,11 @@ export async function generateGameConfig({ prompt, mode = 'create', currentConfi
         keyIndex: index + 1
       };
     } catch (error) {
+      console.error(`Gemini Key ${index + 1} error:`, error.message);
       errors.push(`Key ${index + 1}: ${error.message}`);
     }
   }
 
+  console.error('All Gemini keys failed:', errors);
   throw new Error('AI is busy right now. Please ask the facilitator to try again.');
 }
